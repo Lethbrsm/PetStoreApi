@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="Content/bootstrap.min.css"
+          rel="stylesheet" />
+    <script src="Scripts/jquery-3.0.0.min.js">
+          </script >
+    <script src="Scripts/bootstrap.min.js">
+          </script >
+</head >
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="mt-4 col-sm-6">
+                <h1>Pet Store Order System</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="mt-4 col-sm-6">
+                <label for="customerId">
+                    Customer ID
+                </label>
+                <input type="text" id="customerID"
+                       class="form-control" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="productID">
+                    Product ID
+                </label>
+                <input type="text" id="productID"
+                       class="form-control" />
+                <label for="quantity">
+                    Quantity
+                </label>
+                <input type="text" id="quantity"
+                       class="form-control" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="mt-4 col-sm-6">
+                <button type="button" id="orderButton"
+                        class="btn btn-primary"
+                        onclick="newClick();">
+                    Order
+                </button>
+                <button type="button" id="summaryButton"
+                        class="btn btn-primary"
+                        onclick="summaryClick();">
+                    Summary
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mt-4 col-sm-6">
+                <table class="table table-striped" id="table1">
+                    <thead>
+                        <tr>
+                            <th data-field="PID">Product Name</th>
+                            <th data-field="QID">Quantity</th>
+                            <th data-field="PR">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loader">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mt-4 col-sm-6">
+                <h4 id="finalPrice">
+                    
+                </h4>
+            </div>
+        </div>
+
+
+    </div>
+<script>
+
+    table1.style.display = "none";
+
+    var Item = {
+        id: "",
+        name: "",
+        price: 0,
+        quantity: 0
+    }
+    function newClick() {
+
+        itemInput = new Object();
+        var allVals = true;
+        if (($("#customerID").val() === "") || isNaN($("#customerID").val())) {
+            $("#customerID").val("Please enter your valid Customer ID");
+            allVals = false;
+        }
+        if (($("#productID").val() === "") || isNaN($("#productID").val())) {
+            $("#productID").val("Please enter your valid Product ID");
+            allVals = false;
+        }
+        if (($("#quantity").val() === "") || isNaN($("#quantity").val())) {
+            $("#quantity").val("Please enter your valid Product quantity");
+            allVals = false;
+        }
+
+        if (allVals == true) {
+            itemInput.id = $("#productID").val();
+            itemInput.name = "";
+            itemInput.quantity = $("#quantity").val();
+            newProduct(itemInput);
+            $("#productID").val("");
+            $("#quantity").val("");
+        }
+    }
+    function summaryClick() {
+        summaryGet();
+    }
+    function getData(itemList) {
+        var i;
+        $('#finalPrice').empty();
+        $('#loader').empty();
+        table1.style.display = "inline";
+        
+        for (i = 0; i < itemList.length - 1; i++)
+        {
+            $('#loader').append(
+                '<tr>' +
+                '<td>' + itemList[i].name + '</td>' +
+                '<td>' + itemList[i].quantity + '</td>' +
+                '<td>' + itemList[i].price + '</td>' +
+                '</tr>' + '</table>');
+
+        }
+        $('#finalPrice').append("Your total price is $" + "" + itemList[itemList.length -1].price.toFixed(2));
+    }
+    function summaryGet() {
+        $.ajax({
+            url: "/api/Order",
+            type: 'GET',
+            dataType: 'json',
+            success: function (itemList) {
+                getData(itemList);
+            },
+            error: function (request, message, error) {
+                $('#finalPrice').append("Error retrieving order summary, " + error);
+                
+            }
+        });
+    }
+
+    function newProduct(item) {
+        $.ajax({
+            url: "/api/Order",
+            type: 'POST',
+            contentType:
+                "application/json;charset=utf-8",
+            data: JSON.stringify(item),
+            success: function (item) {
+                
+            },
+            error: function (request, message, error) {
+                $("#productID").val("Please enter a valid Product ID");
+            }
+        });
+    }
+
+    window.onload = function deleteDB() {
+        $.ajax({
+            url: "/api/Order",
+            type: 'DELETE',
+            success: function (item) {
+
+            },
+            error: function (request, message, error) {
+                console.log("Error removing prior database, " + error);
+            }
+        });
+    }
+</script>
+</body>
+</html >
