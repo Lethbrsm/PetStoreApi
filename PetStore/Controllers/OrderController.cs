@@ -54,7 +54,7 @@ namespace PetStore.Controllers
             }
             
             // Creates the embedded database to be used to store item information.
-            using (var db = new LiteDatabase(@"MyDB.db"))
+            using (var db = new LiteDatabase(@"C:\Users\Public\MyDB.db"))
             {
                 var items = db.GetCollection<Item>("items");
                 var checkDuplicate = items.Find(Query.EQ("name", item.name));
@@ -83,7 +83,7 @@ namespace PetStore.Controllers
             IHttpActionResult ret = NotFound();
 
             // Retrieves the current database to get all orders so far.
-            using (var db = new LiteDatabase(@"MyDB.db"))
+            using (var db = new LiteDatabase(@"C:\Users\Public\MyDB.db"))
             {
                 var items = db.GetCollection<Item>("items");
                 var Tester = items.Find(Query.All());
@@ -106,7 +106,7 @@ namespace PetStore.Controllers
         public IHttpActionResult Delete()
         {
             IHttpActionResult ret = NotFound();
-            using (var db = new LiteDatabase(@"MyDB.db"))
+            using (var db = new LiteDatabase(@"C:\Users\Public\MyDB.db"))
             {
                 var checkExists = db.GetCollection<Item>("items");
                 db.DropCollection("items");
