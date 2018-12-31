@@ -108,6 +108,7 @@ namespace PetStore.Controllers
             IHttpActionResult ret = NotFound();
             using (var db = new LiteDatabase(@"MyDB.db"))
             {
+                var checkExists = db.GetCollection<Item>("items");
                 db.DropCollection("items");
                 ret = Ok();
             }

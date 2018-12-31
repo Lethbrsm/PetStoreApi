@@ -13,6 +13,10 @@ namespace PetStore.Models
             // Loop through each item in the list provided from the database and add to the total sum. 
             foreach (Item item in items)
             {
+                if((item.price < 0) || (item.quantity < 1))
+                {
+                    throw new System.ArgumentOutOfRangeException();
+                }
                 total = total + (item.price * item.quantity);
             }
             return total;
